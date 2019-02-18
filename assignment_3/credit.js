@@ -52,13 +52,8 @@ displayWelcome();
 //In our case it's the 2% shown in the example. So given a 1500 balance and a 2% minimum payment rate,
 //you get the $30 minimum payment that is shown.
 
-//Starting balance
-//var startingBalance=1500;
-//Interest rate %
-//var interestRate=18;
-//Minimum payment rate %
-//var minimumPaymentRate=2;
 
+//Starting balance, Interest rate %, Minimum payment rate %
 processPaymentSchedule(1500, 18, 2);
 
 function calculateMinimumPayment(balance, minimumPaymentRate){
@@ -66,11 +61,7 @@ function calculateMinimumPayment(balance, minimumPaymentRate){
   return minimumPayment;
 }
 
-//3. This should be a closure function that generates a new id for the customer. The function should remember the
-//previous id and the new generated id should be the old one plus 1. Make the initial id 1.
-//The Object Technique will allow you to obtain the Golden Bow, demonstrate your mastery of the technique
-//by completing Part 4 & 5 below.
-//The generateId should actually be changed to say that it generates the payment id for the schedule and should start at 1.
+//3. Generates the payment id for the schedule and should start at 1.
 //So in the loop that generates payment schedule, you will use that to create the payment id's.
 
 function generateID(lastPaymentID){
@@ -78,43 +69,56 @@ function generateID(lastPaymentID){
   return paymentID;
 }
 
-//4. processPaymentSchedule
-//This function displays the actual payment schedule. It should take the balance, monthly interest rate and minimum
+//4. Displays the actual payment schedule. Takes the balance, monthly interest rate and minimum
 //payment as arguments.
-//Use the 1500, 18% and 2% literal values below. Each time you calculate a new payment line, create an object literal
-//with properties for the Year, Balance, Payment Num, and InterestPaid. Pass this object literal to the displayPayment
+//Use the 1500, 18% and 2% literal values below. Each time you calculate a new payment line,
 //function.
 function processPaymentSchedule(balance, interestRate, minimumPaymentRate){
 
   var paymentNum=0;
   var minimumPayment=calculateMinimumPayment(balance, minimumPaymentRate);
   paymentNum=generateID(paymentNum);
-
+  var year=1;
   var interestPaid=balance*((interestRate/100)/12);
   var newBalance=balance-minimumPayment+interestPaid;
+  //Create an object literal with properties for the Year, Balance, Payment Num, and InterestPaid.
   var paymentSchedule =
-    [{Year: [],
+    [{Year: [year],
      Balance: [newBalance],
      PaymentNum:[paymentNum],
      InterestPaid:[interestPaid]
    }];
-displayPayment(paymentSchedule);
-var lastIndex=0;
-while(lastIndex<5){
-var lastpaymentNum=paymentSchedule[lastIndex].PaymentNum.pop();
-var newPaymentNum=generateID(lastpaymentNum);
-var lastBalance=paymentSchedule[lastIndex].Balance.pop();
-var newMinimumPayment=calculateMinimumPayment(lastBalance, minimumPaymentRate);
-var newInterestPaid=lastBalance*((interestRate/100)/12);
-var nextBalance=lastBalance-minimumPayment+newInterestPaid;
-lastIndex++;
-paymentSchedule.push({Year: [],
- Balance: [nextBalance],
- PaymentNum:[newPaymentNum],
- InterestPaid:[newInterestPaid]
-});
- displayPayment(paymentSchedule[lastIndex]);
-}
+   //Pass object literal to the displayPayment
+   displayPayment(paymentSchedule);
+   //Keeps track of total interest paid
+   var totalInterest=interestPaid;
+   var lastIndex=0;
+   while(lastIndex<92){
+     var lastpaymentNum=paymentSchedule[lastIndex].PaymentNum.pop();
+     var newPaymentNum=generateID(lastpaymentNum);
+     var lastBalance=paymentSchedule[lastIndex].Balance.pop();
+     var newMinimumPayment=calculateMinimumPayment(lastBalance, minimumPaymentRate);
+     var newInterestPaid=lastBalance*((interestRate/100)/12);
+     var nextBalance=lastBalance-minimumPayment+newInterestPaid;
+     //Calculates year
+     if(newPaymentNum<=12){
+       var year=1;
+     }
+     if(newPaymentNum>12){
+       var year=Math.floor(newPaymentNum/12)+1;
+     }
+     //Adds to total interest paid
+     totalInterest+=newInterestPaid;
+     lastIndex++;
+     //Create an object literal with properties for the Year, Balance, Payment Num, and InterestPaid.
+     paymentSchedule.push({Year: [year],
+       Balance: [nextBalance],
+       PaymentNum:[newPaymentNum],
+       InterestPaid:[totalInterest]
+     });
+     //Pass object literal to the displayPayment
+     displayPayment(paymentSchedule[lastIndex]);
+   }
 }
 
 //5. displayPayment
@@ -123,6 +127,6 @@ paymentSchedule.push({Year: [],
 //submit in the dropbox.
 function displayPayment(paymentSchedule){
   console.log(paymentSchedule);
-  //onsole.log(paymentSchedule.Balance);
+  
 
 }
